@@ -34,7 +34,7 @@ class SPost(db.Model):
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	title = db.Column(db.String(100), nullable=False)
 	email = db.Column(db.String(100), nullable=False)
-	price = db.Column(db.Integer, nullable=False)
+	price = db.Column(db.Float, nullable=False)
 	description = db.Column(db.String(1000), nullable=False)
 	updated = db.Column(db.String)
 
@@ -47,6 +47,7 @@ class SPost(db.Model):
 		self.description = description
 		self.updated = updated
         
+db.create_all()
       
 class AddRecord(FlaskForm):
     # id used only by update/edit
@@ -60,7 +61,7 @@ class AddRecord(FlaskForm):
         Length(min=3, max=1000, message="Invalid description length")
         ])
     price = FloatField('Price', [ InputRequired(),
-        NumberRange(min=0.99, max=9999.99, message="Invalid price range")
+        NumberRange(min=0.01, max=9999.99, message="Invalid price range")
         ])
     email = StringField('Email address', [ InputRequired(),
         Regexp(r'^[A-Za-z\s\-\'\/]+$', message="Invalid email"),
@@ -141,9 +142,9 @@ def select_record(letters):
 # edit or delete - come here from form in /select_record
 @app.route('/edit_or_delete', methods=['POST'])
 def edit_or_delete():
-    id = request.form['id']
+    _id = request.form['id']
     choice = request.form['choice']
-    card = SPost.query.filter(SPost.id == id).first()
+    card = SPost.query.filter(SPost._id == _id).first()
     # two forms in this template
     form1 = AddRecord()
     form2 = DeleteForm()
@@ -152,9 +153,9 @@ def edit_or_delete():
 # result of delete - this function deletes the record
 @app.route('/delete_result', methods=['POST'])
 def delete_result():
-    id = request.form['id_field']
+    _id = request.form['id_field']
     purpose = request.form['purpose']
-    card = SPost.query.filter(SPost.id == id).first()
+    card = SPost.query.filter(SPost._id == _id).first()
     if purpose == 'delete':
         db.session.delete(card)
         db.session.commit()
@@ -167,9 +168,9 @@ def delete_result():
 # result of edit - this function updates the record
 @app.route('/edit_result', methods=['POST'])
 def edit_result():
-    id = request.form['id_field']
+    _id = request.form['id_field']
     # call up the record from the database
-    card = SPost.query.filter(SPost.id == id).first()
+    card = SPost.query.filter(SPost._id == _id).first()
     # update all values
     card.title = request.form['title']
     card.email = request.form['email']
@@ -187,7 +188,7 @@ def edit_result():
         return render_template('result.html', message=message)
     else:
          # show validaton errors
-        card.id = id
+        card._id = _id
         for field, errors in form1.errors.items():
             for error in errors:
                 flash("Error in {}: {}".format(

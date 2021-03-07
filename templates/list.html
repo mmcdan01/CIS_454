@@ -38,9 +38,9 @@ Card Listings
 			{% for card in cards %}
 			<tr>
 				<td>{{ card.title }}</td>
-				<td>{{ card.color }}</td>
+				<td>{{ card.email }}</td>
 				<td>${{ card.price }}</td>
-				<td>{{ card.quantity }}</td>
+				<td>{{ card.description }}</td>
 				<td>{{ card.updated }}</td>
 			</tr>
 			{% endfor %}

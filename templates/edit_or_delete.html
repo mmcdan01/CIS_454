@@ -60,10 +60,9 @@
 			<!-- just one card here -->
 			<tr>
 				<td>{{ card.title }}</td>
-				<td>{{ card.color }}</td>
-				<td>{{ card.style }}</td>
-				<td>${{ card.price }}</td>
-				<td>{{ card.quantity }}</td>
+				<td>{{ card.email }}</td>
+				<td>{{ card.price }}</td>
+				<td>${{ card.description }}</td>
 				<td>{{ card.updated }}</td>
 			</tr>
 
@@ -73,7 +72,7 @@
 		<!-- start form for deleting record - not quickform but still WTForms -->
   		<form action="{{ url_for('delete_result') }}" method="POST" id="delete">
 			{{ form2.csrf_token }}
-			{{ form2.id_field(value=card.id) }}
+			{{ form2.id_field(value=card._id) }}
 			{{ form2.purpose(value='delete') }}
 			{{ form2.submit(class="btn btn-danger space-below-btn") }}
 		</form>
@@ -108,7 +107,7 @@
 			 correct use of WTF Bootstrap styles -->
 		<form method="post" action="{{ url_for('edit_result') }}" id="update">
 			{{ form1.csrf_token }}
-			{{ form1.id_field(value=card.id) }}
+			{{ form1.id_field(value=card._id) }}
 			{{ wtf.form_field(form1.title, value=card.title) }}
 			{{ wtf.form_field(form1.email, value=card.email) }}
 			{{ wtf.form_field(form1.price, value=card.price) }}
