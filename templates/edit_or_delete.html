@@ -1,0 +1,134 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+	<style>
+		body { background: #e8f1f9; }
+	</style>
+{% endblock %}
+
+
+{% block title %}
+	{% if choice == 'delete' %}
+		Delete a Card
+	{% elif choice == 'edit' %}
+		Edit a card
+	{% endif %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+  <div class="row pb-5">
+    <div class="col-lg-10 mx-lg-auto">
+
+      <h1 class="pt-5 pb-2">
+		{% if choice == 'delete' %}
+	  		Delete a card
+	  	{% elif choice == 'edit' %}
+	  		Edit a card
+	  	{% endif %}
+	  </h1>
+	  <!-- ----- THIS TEMPLATE HAS TWO FORMS ----- -->
+	  <!-- but only one will be visible, depending on how the template
+  		   was opened -->
+
+	  <!-- ----- start delete card content ----- -->
+
+	  {% if choice == 'delete' %}
+
+	      <p class="lead alert alert-danger">Are you sure you want to delete this card?</p>
+
+		  <!-- links -->
+		  <p class="ml-4">No. <a href="{{ url_for('index') }}">Return to the index.</a></p>
+
+		  <p class="ml-4">No. <a href="{{ url_for( 'select_record', letters='AF' ) }}">Return to the selection page.</a></p>
+
+		<!-- table showing the selected card -->
+		<table class="table">
+			<tr>
+				<th>card Name</th>
+				<th>E-mail</th>
+				<th>Price</th>
+				<th>Description</th>
+				<th>Updated</th>
+			</tr>
+
+			<!-- just one card here -->
+			<tr>
+				<td>{{ card.title }}</td>
+				<td>{{ card.color }}</td>
+				<td>{{ card.style }}</td>
+				<td>${{ card.price }}</td>
+				<td>{{ card.quantity }}</td>
+				<td>{{ card.updated }}</td>
+			</tr>
+
+		</table>
+
+
+		<!-- start form for deleting record - not quickform but still WTForms -->
+  		<form action="{{ url_for('delete_result') }}" method="POST" id="delete">
+			{{ form2.csrf_token }}
+			{{ form2.id_field(value=card.id) }}
+			{{ form2.purpose(value='delete') }}
+			{{ form2.submit(class="btn btn-danger space-below-btn") }}
+		</form>
+		<!-- end form -->
+
+
+		<!-- ----- end delete card content ----- -->
+		{% else %}
+
+		<!-- ----- start edit card content ----- -->
+
+		<p class="lead alert alert-success">Edit the selected card below.</p>
+
+		<!-- links -->
+		<p><a href="{{ url_for('index') }}">Return to the index.</a></p>
+
+		<p><a href="{{ url_for( 'select_record', letters='AF' ) }}">Return to the selection page.</a></p>
+
+			 {% with errors = get_flashed_messages() %}
+				 {% if errors %}
+					 {% for err in errors %}
+					 <div class="alert alert-danger alert-dismissible" role="alert">
+						 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+						 {{ err }}
+					 </div>
+					 {% endfor %}
+				 {% endif %}
+			 {% endwith %}
+		<!-- end of flash -->
+
+		<!-- start form for editing record
+			 correct use of WTF Bootstrap styles -->
+		<form method="post" action="{{ url_for('edit_result') }}" id="update">
+			{{ form1.csrf_token }}
+			{{ form1.id_field(value=card.id) }}
+			{{ wtf.form_field(form1.title, value=card.title) }}
+			{{ wtf.form_field(form1.email, value=card.email) }}
+			{{ wtf.form_field(form1.price, value=card.price) }}
+			{{ wtf.form_field(form1.description, value=card.description) }}
+			{{ wtf.form_field(form1.submit, button_map={'submit':'success'}) }}
+		</form>
+
+		<script>
+		// this JavaScript fixes the style choice in the select element
+		// without this, the current value is not shown in the menu
+		if ( document.querySelector('select') ) {
+			document.querySelector('select').value = "{{ card.title }}";
+		}
+		</script>
+
+		{% endif %}
+
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
