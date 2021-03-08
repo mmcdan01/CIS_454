@@ -19,8 +19,9 @@ Bootstrap(app)
 # the name of the database; add path if necessary
 db_name = 'Marketplace.db'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////' + db_name
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.sqlite3'
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_name
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 # this variable, db, will be used for all SQLAlchemy commands
@@ -46,8 +47,7 @@ class SPost(db.Model):
 		self.price = price
 		self.description = description
 		self.updated = updated
-        
-db.create_all()
+
       
 class AddRecord(FlaskForm):
     # id used only by update/edit
@@ -96,7 +96,7 @@ def index():
     titles = SPost.query.with_entities(SPost.title).distinct()
     return render_template('index.html', titles=titles)
 
-@app.route('/inventory/<style>')
+@app.route('/inventory/<title>')
 def inventory(title):
     cards = SPost.query.filter_by(title=title).order_by(SPost.title).all()
     return render_template('list.html', cards=cards, title=title)
@@ -153,9 +153,9 @@ def edit_or_delete():
 # result of delete - this function deletes the record
 @app.route('/delete_result', methods=['POST'])
 def delete_result():
-    _id = request.form['id_field']
+    id = request.form['id_field']
     purpose = request.form['purpose']
-    card = SPost.query.filter(SPost._id == _id).first()
+    card = SPost.query.filter(SPost._id == id).first()
     if purpose == 'delete':
         db.session.delete(card)
         db.session.commit()
@@ -214,5 +214,6 @@ def internal_server_error(e):
 
 # +++++++++++++++++++++++
 
-if __name__ == '__main__':
+if __name__ == '__main__':      
+    db.create_all()
     app.run(debug=True)

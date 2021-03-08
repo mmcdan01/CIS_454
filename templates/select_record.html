@@ -50,11 +50,11 @@ Select a Card
 			<!-- here is a for-loop to give us all the cards -->
 			{% for card in cards %}
 			<tr>
-				<td class="center-align"><input type="radio" name="id" value="{{ card.id }}" required></td>
+				<td class="center-align"><input type="radio" name="id" value="{{ card._id }}" required></td>
 				<td>{{ card.title }}</td>
 				<td>{{ card.email }}</td>
-				<td>{{ card.price }}</td>
-				<td>${{ card.description }}</td>
+				<td>${{ card.price }}</td>
+				<td>{{ card.description }}</td>
 				<td>{{ card.updated }}</td>
 			</tr>
 			{% endfor %}
