@@ -57,7 +57,7 @@ class AddRecord(FlaskForm):
         Length(min=3, max=35, message="Invalid title length")
         ])
     description = StringField('Description', [ InputRequired(),
-        Regexp(r'^[A-Za-z\s\-\'\/]+$', message="Invalid description"),
+        Regexp(r'^[a-zA-Z0-9_.,!\(\)\' ]+$', message="Invalid description"),
         Length(min=3, max=1000, message="Invalid description length")
         ])
     price = FloatField('Price', [ InputRequired(),
