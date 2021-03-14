@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block title %}Account Management{% endblock %} {% block
+content %}
+
+<html>
+  <body>
+      <p><a href="{{ url_for('auth.changeUsername') }}">Change your Username</a></p>  
+      <p><a href="{{ url_for('auth.changePassword') }}">Change your Password</a></p>
+      <p><a href="{{ url_for('auth.deleteAccount') }}">Delete your Account</a></p>      
+      </body>
+      </html>
+  {% endblock %}

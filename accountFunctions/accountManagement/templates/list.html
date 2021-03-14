@@ -1,0 +1,53 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}
+{{ super() }}
+	<style>
+		body { background: #e8f1f9; }
+	</style>
+{% endblock %}
+
+
+{% block title %}
+Card Listings
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+  <div class="row pb-5">
+    <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+      <h1 class="pt-5 pb-2">List of cards</h1>
+
+      <p class="lead alert alert-warning">This is a list of all the cards in our inventory.</p>
+
+	  <p class="ml-4"><a href="{{ url_for('index') }}">Return to the index.</a></p>
+
+		<table class="table">
+			<tr>
+				<th>Card Name</th>
+				<th>E-mail</th>
+				<th>Price</th>
+				<th>Description</th>
+				<th>Updated</th>
+			</tr>
+
+			<!-- here is a for-loop to give us all the cards -->
+			{% for card in cards %}
+			<tr>
+				<td>{{ card.title }}</td>
+				<td>{{ card.email }}</td>
+				<td>${{ card.price }}</td>
+				<td>{{ card.description }}</td>
+				<td>{{ card.updated }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

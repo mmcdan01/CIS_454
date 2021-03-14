@@ -13,8 +13,11 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        
 
         user = User.query.filter_by(email=email).first()
+        
+
         if user:
             if check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
@@ -49,7 +52,7 @@ def sign_up():
         elif len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
         elif len(first_name) < 2:
-            flash('First name must be greater than 1 character.', category='error')
+            flash('Username must be greater than 1 character.', category='error')
         elif password1 != password2:
             flash('Passwords don\'t match.', category='error')
         elif len(password1) < 7:
@@ -64,3 +67,71 @@ def sign_up():
             return redirect(url_for('views.home'))
 
     return render_template("sign_up.html", user=current_user)
+
+@auth.route('/changePassword', methods=['GET', 'POST'])
+def changePassword():  
+    if request.method == 'POST':
+        user = current_user      
+        oldPassword = user.password
+        newPassword1 = request.form.get('password2')
+        newPassword2 = request.form.get('password3')
+        
+        if newPassword1 == oldPassword:
+            flash('Your new password must be different from your old password.', category='error')
+        elif newPassword1 != newPassword2:
+            flash('Passwords don\'t match.', category='error')
+        elif len(newPassword1) < 7:
+            flash('Password must be at least 7 characters.', category='error')
+        else:
+            user.password = generate_password_hash(newPassword1, method='sha256')
+            db.session.add(user)
+            db.session.commit()
+            flash('Password Updated!', category='success')
+            return redirect(url_for('views.home'))
+    return render_template("changePW.html", user=current_user)
+            
+
+@auth.route('/accountManagement', methods=['GET', 'POST'])
+def accountManagement(): 
+        return render_template("accountM.html", user=current_user)
+    
+@auth.route('/changeUsername', methods=['GET', 'POST'])
+def changeUsername():  
+    if request.method == 'POST':
+        user = current_user 
+        oldUsername = user.first_name
+        newUsername = request.form.get('firstName')
+        newUsername1 = request.form.get('firstName1')
+        
+        if newUsername == oldUsername:
+            flash('Your new username must be different from your old username.', category='error')
+        elif len(newUsername) < 2:
+            flash('Username must be greater than 1 character.', category='error')
+        elif newUsername != newUsername1:
+            flash('Usernames don\'t match.', category='error')
+        else: 
+            user.first_name = newUsername
+            db.session.add(user)
+            db.session.commit()
+            flash('Username Updated!', category='success')
+            return redirect(url_for('auth.accountManagement'))
+    return render_template("changeUsername.html", user=current_user)
+        
+@auth.route('/deleteAccount', methods=['GET', 'POST'])
+def deleteAccount():
+    if request.method == 'POST':
+        user = current_user
+        password = request.form.get('password1')
+        
+        if check_password_hash(user.password, password) == False:
+            flash('Your password is incorrect.', category='error')
+        else:
+            flash('Account Deleted', category='success')
+            db.session.delete(user) 
+            db.session.commit()
+            return redirect(url_for('auth.logout'))
+    return render_template("deleteAccount.html", user=current_user)
+    
+            
+        
+    
