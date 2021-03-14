@@ -54,7 +54,7 @@ class AddRecord(FlaskForm):
     id_field = HiddenField()
     title = StringField('Listing name', [ InputRequired(),
         Regexp(r'^[A-Za-z\s\-\']+$', message="Invalid title name"),
-        Length(min=3, max=25, message="Invalid title length")
+        Length(min=3, max=35, message="Invalid title length")
         ])
     description = StringField('Description', [ InputRequired(),
         Regexp(r'^[A-Za-z\s\-\'\/]+$', message="Invalid description"),
@@ -64,7 +64,7 @@ class AddRecord(FlaskForm):
         NumberRange(min=0.01, max=9999.99, message="Invalid price range")
         ])
     email = StringField('Email address', [ InputRequired(),
-        Regexp(r'^[A-Za-z\s\-\'\/]+$', message="Invalid email"),
+        Regexp(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', message="Invalid email"),
         Length(min=6, max=50, message="Invalid email length")
         ])
     # updated - date - handled in the route function
@@ -110,6 +110,14 @@ def add_record():
         email = request.form['email']
         price = request.form['price']
         description = request.form['description']
+        
+        #Capitalize first letter of each word for sorting later
+        strList = title.split()
+        newString = ''
+        for val in strList:
+            newString += val.capitalize()+ ' '
+        title = newString
+            
         # get today's date from function, above all the routes
         updated = stringdate()
         # the data to be inserted into Sock model - the table, socks
@@ -178,6 +186,13 @@ def edit_result():
     card.price = request.form['price']
     # get today's date from function, above all the routes
     card.updated = stringdate()
+    
+    #Capitalize first letter of each word for sorting later
+    strList = card.title.split()
+    newString = ''
+    for val in strList:
+        newString += val.capitalize()+ ' '
+    card.title = newString
 
     form1 = AddRecord()
     if form1.validate_on_submit():
