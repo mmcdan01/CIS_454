@@ -2,11 +2,15 @@
 from flask import Flask, render_template, request, flash, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
-
+from flask_login import UserMixin, LoginManager, login_required, current_user, logout_user, login_user
+from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, SelectField, RadioField, HiddenField, StringField, IntegerField, FloatField
 from wtforms.validators import InputRequired, Length, Regexp, NumberRange
 from datetime import date
+
+import os
 
 app = Flask(__name__)
 
@@ -17,15 +21,30 @@ app.config['SECRET_KEY'] = 'TRYt0Br3akTh1saaaMLXH243GssUWwKdTWS7FDhdwYF56wPj8'
 Bootstrap(app)
 
 # the name of the database; add path if necessary
-db_name = 'Marketplace.db'
+db_name = 'database.db'
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.sqlite3'
+UPLOAD_FOLDER = '/uploads'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_name
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # this variable, db, will be used for all SQLAlchemy commands
 db = SQLAlchemy(app)
+
+#Unsure if necessary
+# app.register_blueprint(views, url_prefix='/')
+# app.register_blueprint(auth, url_prefix='/')
+
+login_manager = LoginManager()
+login_manager.login_view = 'app.login'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 class SPost(db.Model):
 	# Defines the Table for sales postings
@@ -48,7 +67,13 @@ class SPost(db.Model):
 		self.description = description
 		self.updated = updated
 
-      
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(150), unique=True)
+    password = db.Column(db.String(150))
+    first_name = db.Column(db.String(25))
+
+
 class AddRecord(FlaskForm):
     # id used only by update/edit
     id_field = HiddenField()
@@ -90,11 +115,18 @@ def stringdate():
 # +++++++++++++++++++++++
 # routes
 
+'''
+@app.route('/',  methods=['GET', 'POST'])
+@login_required
+def home():
+    return render_template("MPHome.html", user=current_user)
+'''
 @app.route('/')
-def index():
+def MPHome():
     # get a list of unique values in the style column
     titles = SPost.query.with_entities(SPost.title).distinct()
-    return render_template('index.html', titles=titles)
+    return render_template('MPHome.html', titles=titles)
+
 
 @app.route('/inventory/<title>')
 def inventory(title):
@@ -102,7 +134,7 @@ def inventory(title):
     return render_template('list.html', cards=cards, title=title)
 
 #Add a new entry to the DB    
-@app.route('/add_record', methods=['GET', 'POST'])
+@app.route('/MPHome/add_record', methods=['GET', 'POST'])
 def add_record():
     form1 = AddRecord()
     if form1.validate_on_submit():
@@ -120,7 +152,7 @@ def add_record():
             
         # get today's date from function, above all the routes
         updated = stringdate()
-        # the data to be inserted into Sock model - the table, socks
+        # the data to be inserted into card model - the table, card
         record = SPost(title, email, price, description, updated)
         # Flask-SQLAlchemy magic adds record to database
         db.session.add(record)
@@ -167,7 +199,7 @@ def delete_result():
     if purpose == 'delete':
         db.session.delete(card)
         db.session.commit()
-        message = f"The sock {card.title} has been deleted from the database."
+        message = f"The card {card.title} has been deleted from the database."
         return render_template('result.html', message=message)
     else:
         # this calls an error handler
@@ -211,6 +243,131 @@ def edit_result():
                     error
                 ), 'error')
         return render_template('edit_or_delete.html', form1=form1, card=card, choice='edit')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+
+        user = User.query.filter_by(email=email).first()
+        
+
+        if user:
+            if check_password_hash(user.password, password):
+                flash('Logged in successfully!', category='success')
+                login_user(user, remember=True)
+                return redirect(url_for('MPHome'))
+            else:
+                flash('Incorrect password, try again.', category='error')
+        else:
+            flash('Email does not exist.', category='error')
+
+    return render_template("login.html", user=current_user)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('auth.login'))
+
+
+@app.route('/sign-up', methods=['GET', 'POST'])
+def sign_up():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        first_name = request.form.get('firstName')
+        password1 = request.form.get('password1')
+        password2 = request.form.get('password2')
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Email already exists.', category='error')
+        elif len(email) < 4:
+            flash('Email must be greater than 3 characters.', category='error')
+        elif len(first_name) < 2:
+            flash('Username must be greater than 1 character.', category='error')
+        elif password1 != password2:
+            flash('Passwords don\'t match.', category='error')
+        elif len(password1) < 7:
+            flash('Password must be at least 7 characters.', category='error')
+        else:
+            new_user = User(email=email, first_name=first_name, password=generate_password_hash(
+                password1, method='sha256'))
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user, remember=True)
+            flash('Account created!', category='success')
+            return redirect(url_for('MPHome'))
+
+    return render_template("sign_up.html", user=current_user)
+
+@app.route('/changePassword', methods=['GET', 'POST'])
+def changePassword():  
+    if request.method == 'POST':
+        user = current_user      
+        oldPassword = user.password
+        newPassword1 = request.form.get('password2')
+        newPassword2 = request.form.get('password3')
+        
+        if newPassword1 == oldPassword:
+            flash('Your new password must be different from your old password.', category='error')
+        elif newPassword1 != newPassword2:
+            flash('Passwords don\'t match.', category='error')
+        elif len(newPassword1) < 7:
+            flash('Password must be at least 7 characters.', category='error')
+        else:
+            user.password = generate_password_hash(newPassword1, method='sha256')
+            db.session.add(user)
+            db.session.commit()
+            flash('Password Updated!', category='success')
+            return redirect(url_for('MPHome'))
+    return render_template("changePW.html", user=current_user)
+            
+
+@app.route('/accountManagement', methods=['GET', 'POST'])
+def accountManagement(): 
+        return render_template("accountM.html", user=current_user)
+    
+@app.route('/changeUsername', methods=['GET', 'POST'])
+def changeUsername():  
+    if request.method == 'POST':
+        user = current_user 
+        oldUsername = user.first_name
+        newUsername = request.form.get('firstName')
+        newUsername1 = request.form.get('firstName1')
+        
+        if newUsername == oldUsername:
+            flash('Your new username must be different from your old username.', category='error')
+        elif len(newUsername) < 2:
+            flash('Username must be greater than 1 character.', category='error')
+        elif newUsername != newUsername1:
+            flash('Usernames don\'t match.', category='error')
+        else: 
+            user.first_name = newUsername
+            db.session.add(user)
+            db.session.commit()
+            flash('Username Updated!', category='success')
+            return redirect(url_for('auth.accountManagement'))
+    return render_template("changeUsername.html", user=current_user)
+        
+@app.route('/deleteAccount', methods=['GET', 'POST'])
+def deleteAccount():
+    if request.method == 'POST':
+        user = current_user
+        password = request.form.get('password1')
+        
+        if check_password_hash(user.password, password) == False:
+            flash('Your password is incorrect.', category='error')
+        else:
+            flash('Account Deleted', category='success')
+            db.session.delete(user) 
+            db.session.commit()
+            return redirect(url_for('auth.logout'))
+    return render_template("deleteAccount.html", user=current_user)
+    
     
 # +++++++++++++++++++++++
 # error routes

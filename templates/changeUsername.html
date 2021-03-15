@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block title %}Change Username{% endblock %} {% block
+content %}
+<form method="POST">
+  <h3 align="center">Change Your Username</h3>
+  <div class="form-group">
+    <label for="firstName">Enter New Username</label>
+    <input
+      type="text"
+      class="form-control"
+      id="firstName"
+      name="firstName"
+      placeholder="Enter New Username"
+    />
+  </div>
+    <div class="form-group">
+    <label for="firstName">Confirm New Username</label>
+    <input
+      type="text"
+      class="form-control"
+      id="firstName1"
+      name="firstName1"
+      placeholder="Enter Username"
+    />
+  </div>
+  <br />
+  <button type="submit" class="btn btn-primary">Submit Changes</button>
+</form>
+{% endblock %}
