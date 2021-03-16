@@ -305,6 +305,7 @@ def sign_up():
     return render_template("sign_up.html", user=current_user)
 
 @app.route('/changePassword', methods=['GET', 'POST'])
+@login_required
 def changePassword():  
     if request.method == 'POST':
         user = current_user      
@@ -328,10 +329,12 @@ def changePassword():
             
 
 @app.route('/accountManagement', methods=['GET', 'POST'])
+@login_required
 def accountManagement(): 
         return render_template("accountM.html", user=current_user)
     
 @app.route('/changeUsername', methods=['GET', 'POST'])
+@login_required
 def changeUsername():  
     if request.method == 'POST':
         user = current_user 
@@ -354,6 +357,7 @@ def changeUsername():
     return render_template("changeUsername.html", user=current_user)
         
 @app.route('/deleteAccount', methods=['GET', 'POST'])
+@login_required
 def deleteAccount():
     if request.method == 'POST':
         user = current_user
