@@ -350,7 +350,7 @@ def changeUsername():
             db.session.add(user)
             db.session.commit()
             flash('Username Updated!', category='success')
-            return redirect(url_for('app.accountManagement'))
+            return redirect(url_for('accountManagement'))
     return render_template("changeUsername.html", user=current_user)
         
 @app.route('/deleteAccount', methods=['GET', 'POST'])
@@ -365,7 +365,7 @@ def deleteAccount():
             flash('Account Deleted', category='success')
             db.session.delete(user) 
             db.session.commit()
-            return redirect(url_for('app.logout'))
+            return redirect(url_for('logout'))
     return render_template("deleteAccount.html", user=current_user)
     
     
