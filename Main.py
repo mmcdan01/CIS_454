@@ -125,7 +125,7 @@ def home():
 def MPHome():
     # get a list of unique values in the style column
     titles = SPost.query.with_entities(SPost.title).distinct()
-    return render_template('MPHome.html', titles=titles)
+    return render_template('MPHome.html', titles=titles, user=current_user)
 
 
 @app.route('/inventory/<title>')
@@ -159,7 +159,7 @@ def add_record():
         db.session.commit()
         # create a message to send to the template
         message = f"The data for {title} has been submitted."
-        return render_template('add_record.html', message=message)
+        return render_template('add_record.html', message=message, user=current_user)
     else:
         # show validaton errors
         for field, errors in form1.errors.items():
@@ -168,7 +168,7 @@ def add_record():
                     getattr(form1, field).label.text,
                     error
                 ), 'error')
-        return render_template('add_record.html', form1=form1)
+        return render_template('add_record.html', form1=form1, user=current_user)
 
 # select a record to edit or delete
 @app.route('/select_record/<letters>')
@@ -177,7 +177,7 @@ def select_record(letters):
     # .between() evaluates first letter of a string
     a, b = list(letters)
     cards = SPost.query.filter(SPost.title.between(a, b)).order_by(SPost.title).all()
-    return render_template('select_record.html', cards=cards)
+    return render_template('select_record.html', cards=cards, user=current_user)
     
 # edit or delete - come here from form in /select_record
 @app.route('/edit_or_delete', methods=['POST'])
@@ -188,7 +188,7 @@ def edit_or_delete():
     # two forms in this template
     form1 = AddRecord()
     form2 = DeleteForm()
-    return render_template('edit_or_delete.html', card=card, form1=form1, form2=form2, choice=choice)
+    return render_template('edit_or_delete.html', card=card, form1=form1, form2=form2, choice=choice, user=current_user)
 
 # result of delete - this function deletes the record
 @app.route('/delete_result', methods=['POST'])
@@ -200,7 +200,7 @@ def delete_result():
         db.session.delete(card)
         db.session.commit()
         message = f"The card {card.title} has been deleted from the database."
-        return render_template('result.html', message=message)
+        return render_template('result.html', message=message, user=current_user)
     else:
         # this calls an error handler
         abort(405)
@@ -232,7 +232,7 @@ def edit_result():
         db.session.commit()
         # create a message to send to the template
         message = f"The data for card {card.title} has been updated."
-        return render_template('result.html', message=message)
+        return render_template('result.html', message=message, user=current_user)
     else:
          # show validaton errors
         card._id = _id
@@ -242,7 +242,7 @@ def edit_result():
                     getattr(form1, field).label.text,
                     error
                 ), 'error')
-        return render_template('edit_or_delete.html', form1=form1, card=card, choice='edit')
+        return render_template('edit_or_delete.html', form1=form1, card=card, choice='edit', user=current_user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -271,7 +271,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('app.login'))
+    return redirect(url_for('login'))
 
 
 @app.route('/sign-up', methods=['GET', 'POST'])
@@ -305,6 +305,7 @@ def sign_up():
     return render_template("sign_up.html", user=current_user)
 
 @app.route('/changePassword', methods=['GET', 'POST'])
+@login_required
 def changePassword():  
     if request.method == 'POST':
         user = current_user      
@@ -328,10 +329,12 @@ def changePassword():
             
 
 @app.route('/accountManagement', methods=['GET', 'POST'])
+@login_required
 def accountManagement(): 
         return render_template("accountM.html", user=current_user)
     
 @app.route('/changeUsername', methods=['GET', 'POST'])
+@login_required
 def changeUsername():  
     if request.method == 'POST':
         user = current_user 
@@ -350,10 +353,11 @@ def changeUsername():
             db.session.add(user)
             db.session.commit()
             flash('Username Updated!', category='success')
-            return redirect(url_for('app.accountManagement'))
+            return redirect(url_for('accountManagement'))
     return render_template("changeUsername.html", user=current_user)
         
 @app.route('/deleteAccount', methods=['GET', 'POST'])
+@login_required
 def deleteAccount():
     if request.method == 'POST':
         user = current_user
@@ -365,7 +369,7 @@ def deleteAccount():
             flash('Account Deleted', category='success')
             db.session.delete(user) 
             db.session.commit()
-            return redirect(url_for('app.logout'))
+            return redirect(url_for('logout'))
     return render_template("deleteAccount.html", user=current_user)
     
     
