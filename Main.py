@@ -122,6 +122,7 @@ def home():
     return render_template("MPHome.html", user=current_user)
 '''
 @app.route('/MPHome')
+@login_required
 def MPHome():
     # get a list of unique values in the style column
     titles = SPost.query.with_entities(SPost.title).distinct()
@@ -134,12 +135,14 @@ def defaultHome():
 
 
 @app.route('/inventory/<title>')
+@login_required
 def inventory(title):
     cards = SPost.query.filter_by(title=title).order_by(SPost.title).all()
     return render_template('list.html', cards=cards, title=title)
 
 #Add a new entry to the DB    
 @app.route('/MPHome/add_record', methods=['GET', 'POST'])
+@login_required
 def add_record():
     form1 = AddRecord()
     if form1.validate_on_submit():
@@ -177,6 +180,7 @@ def add_record():
 
 # select a record to edit or delete
 @app.route('/select_record/<letters>')
+@login_required
 def select_record(letters):
     # alphabetical lists by card name, chunked by letters between _ and _
     # .between() evaluates first letter of a string
@@ -186,6 +190,7 @@ def select_record(letters):
     
 # edit or delete - come here from form in /select_record
 @app.route('/edit_or_delete', methods=['POST'])
+@login_required
 def edit_or_delete():
     _id = request.form['id']
     choice = request.form['choice']
@@ -197,6 +202,7 @@ def edit_or_delete():
 
 # result of delete - this function deletes the record
 @app.route('/delete_result', methods=['POST'])
+@login_required
 def delete_result():
     id = request.form['id_field']
     purpose = request.form['purpose']
@@ -212,6 +218,7 @@ def delete_result():
         
 # result of edit - this function updates the record
 @app.route('/edit_result', methods=['POST'])
+@login_required
 def edit_result():
     _id = request.form['id_field']
     # call up the record from the database
