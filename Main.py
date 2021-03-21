@@ -121,11 +121,16 @@ def stringdate():
 def home():
     return render_template("MPHome.html", user=current_user)
 '''
-@app.route('/')
+@app.route('/MPHome')
 def MPHome():
     # get a list of unique values in the style column
     titles = SPost.query.with_entities(SPost.title).distinct()
     return render_template('MPHome.html', titles=titles, user=current_user)
+
+@app.route('/', methods=['GET', 'POST'])
+def defaultHome():
+    return render_template("defaultHome.html", user=current_user)
+
 
 
 @app.route('/inventory/<title>')
