@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% block title %}Welcome to Cardstocks!{% endblock %} {% block
+content %}
+
+<style>
+.button{
+    height:60px; 
+    width:100px; 
+    margin: -20px -50px; 
+    position:abstract;
+    top:50%; 
+    left:50%;
+}
+.button1{
+    height:60px; 
+    width:100px; 
+    margin: -20px -50px; 
+    position:abstract;
+    top:%; 50
+    left:50%;
+}
+.container{
+text-align: center;
+}
+</style>
+
+
+<html>
+<h3> Welcome to Cardstocks! </h3>
+  <body>
+      <div id="container">
+     <br></br> <br></br>
+    <button onclick="window.location.href='http://127.0.0.1:5000/login'" class="btn btn-primary button">Login</button>
+    <br></br> <br></br>
+    <button onclick="window.location.href='http://127.0.0.1:5000/sign-up'" class="btn btn-primary button1">Sign-up</button> 
+     </div>
+     <br></br>
+     <br></br>
+     <img src="/static/cardImage.png">
+      </body>
+      </html>
+  {% endblock %}
