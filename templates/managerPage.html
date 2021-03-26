@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% block title %}Manager Page{% endblock %} {% block
+content %}
+<html>
+<head>
+</head>
+<body>
+<p> List of User Emails and Usernames: </p>
+
+<ol>
+
+{% for i in range(0,length)%}
+    <li>{{ans[i]}}</li>
+{%endfor%}
+</ol>
+
+<p> List of Cards on the Market: </p>
+
+<ol>
+{% for i in range(0,cardLength)%}
+    <li>{{cardAns[i]}}</li>
+{%endfor%}
+</ol>
+</body>
+</html>
+
+
+{% endblock %}
