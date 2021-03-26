@@ -9,6 +9,7 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, SelectField, RadioField, HiddenField, StringField, IntegerField, FloatField
 from wtforms.validators import InputRequired, Length, Regexp, NumberRange
 from datetime import date
+import sqlite3
 
 import os
 
@@ -383,6 +384,22 @@ def deleteAccount():
             db.session.commit()
             return redirect(url_for('logout'))
     return render_template("deleteAccount.html", user=current_user)
+
+@app.route('/managerPage', methods=['GET', 'POST'])
+@login_required
+def managerPage():
+    connection = sqlite3.connect("database.db")
+    crsr = connection.cursor()
+    cardCrsr = connection.cursor()
+    crsr.execute("SELECT email, first_name FROM user")
+    cardCrsr.execute("SELECT * FROM SPost")
+    ans = crsr.fetchall()
+    cardAns = cardCrsr.fetchall()
+    length = len(ans)
+    cardLength = len(cardAns)
+    connection.close()
+    return render_template("managerPage.html", user=current_user, ans=ans, length = length, cardAns=cardAns, cardLength=cardLength)
+   
     
     
 # +++++++++++++++++++++++
