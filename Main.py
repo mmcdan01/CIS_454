@@ -296,11 +296,11 @@ def sign_up():
         password2 = request.form.get('password2')
 
         user = User.query.filter_by(email=email).first()
-	first_name = User.query.filter_by(first_name=first_name).first()
+	first_nameCheck = User.query.filter_by(first_name=first_name).first()
 
         if user:
             flash('Email already exists.', category='error')
-	elif first_name:
+	elif first_nameCheck:
             flash('Username already exists.', category='error')
         elif len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
@@ -358,11 +358,14 @@ def changeUsername():
         oldUsername = user.first_name
         newUsername = request.form.get('firstName')
         newUsername1 = request.form.get('firstName1')
-        
+	newUsernameCheck = User.query.filter_by(first_name=newUsername).first()
+	
         if newUsername == oldUsername:
             flash('Your new username must be different from your old username.', category='error')
         elif len(newUsername) < 2:
             flash('Username must be greater than 1 character.', category='error')
+        elif newUsernameCheck:
+            flash('Username already exists.', category='error')
         elif newUsername != newUsername1:
             flash('Usernames don\'t match.', category='error')
         else: 
