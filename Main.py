@@ -281,7 +281,6 @@ def login():
 
 
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
@@ -389,7 +388,7 @@ def deleteAccount():
             flash('Account Deleted', category='success')
             db.session.delete(user) 
             db.session.commit()
-            return redirect(url_for('logout'))
+            return redirect(url_for('defaultHome'))
     return render_template("deleteAccount.html", user=current_user)
 
 @app.route('/managerPage', methods=['GET', 'POST'])
