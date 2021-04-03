@@ -330,7 +330,7 @@ def changePassword():
         newPassword1 = request.form.get('password2')
         newPassword2 = request.form.get('password3')
         
-        if newPassword1 == oldPassword:
+        if check_password_hash(oldPassword, newPassword1):
             flash('Your new password must be different from your old password.', category='error')
         elif newPassword1 != newPassword2:
             flash('Passwords don\'t match.', category='error')
