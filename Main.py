@@ -283,7 +283,7 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('defaultHome'))
 
 
 @app.route('/sign-up', methods=['GET', 'POST'])
