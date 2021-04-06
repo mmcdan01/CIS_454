@@ -34,4 +34,4 @@ python3 -m http.server
 
 ```
 
-#Written by Matthew McDaniels and Gregory M.
+#Written by Matthew M. and Gregory M.
