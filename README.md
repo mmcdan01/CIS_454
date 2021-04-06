@@ -7,15 +7,15 @@ Please have latest version of Python installed
 To run this website you will need to pip install:
 
 1. flask
-2. flask_sqlalchemy 
-3. flask_bootstrap
-4. flask_login 
-5. werkzeug.utils
-6. Werkzeug.security
-7. flask_wtf
+2. flask_wtf
+3. flask_login 
+4. flask_bootstrap
+5. flask_sqlalchemy 
+6. werkzeug.utils
+7. Werkzeug.security
 8. wtforms
 9. wtforms.validators
-10. datetime import date
+10. datetime
 11. sqlite3
 
 #======================================================
