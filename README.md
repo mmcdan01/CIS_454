@@ -23,7 +23,7 @@ To run this website you will need to pip install:
 Simply download the repository to your harddrive
 Run powershell
 cd to the directory that has Main.py (ex. S:\Desktop\College\CIS_454)
-type <python ./main.py> and press enter
+type <python ./main.py> and press enter to run the main site, to run the forun, type <ForumChat.py> and press enter
 open a web browser and navigate to "http://127.0.0.1:5000/"
 
 #======================================================
