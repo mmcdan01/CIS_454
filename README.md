@@ -26,6 +26,12 @@ cd to the directory that has Main.py (ex. S:\Desktop\College\CIS_454)
 type <python ./main.py> and press enter
 open a web browser and navigate to "http://127.0.0.1:5000/"
 
+#======================================================
+Bram & Jeremy:
+To run searchbar functionality:
+
+python3 -m http.server
+
 ```
 
 #Written by Matthew McDaniels and Gregory Morneault
